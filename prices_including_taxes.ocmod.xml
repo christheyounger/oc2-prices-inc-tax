@@ -1,0 +1,814 @@
+<modification>
+	<name><![CDATA[Prices including taxes]]></name>
+	<version><![CDATA[1.0]]></version>
+	<author><![CDATA[Chris Young - chris@youngfam.net]]></author>
+	<file path="admin/view/template/setting/setting.tpl">
+		<operation>
+			<search><![CDATA[<legend><?php echo $text_tax; ?></legend>]]></search>
+			<add position="after"><![CDATA[
+				<div class="form-group">
+                  <label class="col-sm-2 control-label"><?php echo $entry_tax_included; ?></label>
+                  <div class="col-sm-10">
+              		<?php if ($config_tax_included) { ?>
+                	<input type="radio" name="config_tax_included" value="1" checked="checked" />
+                	<?php echo $text_yes; ?>
+                	<input type="radio" name="config_tax_included" value="0" />
+                	<?php echo $text_no; ?>
+                	<?php } else { ?>
+	                <input type="radio" name="config_tax_included" value="1" />
+	                <?php echo $text_yes; ?>
+	                <input type="radio" name="config_tax_included" value="0" checked="checked" />
+	                <?php echo $text_no; ?>
+	                <?php } ?>
+	              </div>
+	            </div>
+	            <div class="form-group">
+                  <label class="col-sm-2 control-label"><?php echo $entry_tax_included_store_based; ?></label>
+              	  <div class="col-sm-10">
+              	  	<?php if ($config_tax_included_store_based) { ?>
+	                <input type="radio" name="config_tax_included_store_based" value="1" checked="checked"<?php if (!$config_tax_included) { echo " disabled"; } ?> />
+	                <?php echo $text_yes; ?>
+	                <input type="radio" name="config_tax_included_store_based" value="0"<?php if (!$config_tax_included) { echo " disabled"; } ?> />
+	                <?php echo $text_no; ?>
+	                <?php } else { ?>
+	                <input type="radio" name="config_tax_included_store_based" value="1"<?php if (!$config_tax_included) { echo " disabled"; } ?> />
+	                <?php echo $text_yes; ?>
+	                <input type="radio" name="config_tax_included_store_based" value="0" checked="checked"<?php if (!$config_tax_included) { echo " disabled"; } ?> />
+	                <?php echo $text_no; ?>
+	                <?php } ?>
+	              </div>
+	            </div>
+	            <div class="form-group">
+                  <label class="col-sm-2 control-label"><?php echo $entry_tax_included_country; ?></label>
+              	  <div class="col-sm-10">
+              	  	<select name="config_tax_included_country_id"<?php if (!$config_tax_included or $config_tax_included_store_based) { echo " disabled"; } ?>>
+	                <?php foreach ($countries as $country) { ?>
+	                <?php if ($country['country_id'] == $config_tax_included_country_id) { ?>
+	                <option value="<?php echo $country['country_id']; ?>" selected="selected"><?php echo $country['name']; ?></option>
+	                <?php } else { ?>
+	                <option value="<?php echo $country['country_id']; ?>"><?php echo $country['name']; ?></option>
+	                <?php } ?>
+	                <?php } ?>
+	        	    </select>
+	              </div>
+	            </div>
+	            <div class="form-group">
+                  <label class="col-sm-2 control-label"><?php echo $entry_tax_included_zone; ?></label>
+              	  <div class="col-sm-10">
+	              	<select name="config_tax_included_zone_id"<?php if (!$config_tax_included or $config_tax_included_store_based) { echo " disabled"; } ?>>
+	                </select>
+	              </div>
+	            </div>
+            <script type="text/javascript">
+			<!--
+			
+			$(document).ready(function(){
+				if ($('#form-setting input:radio[name=config_tax_included_store_based]:checked').val() == '1') {
+					$('#form-setting select[name=config_tax_included_country_id]').parent().parent().hide();
+					$('#form-setting select[name=config_tax_included_zone_id]').parent().parent().hide();
+				}
+
+				$('#form-setting input[name=config_tax_included]').change(function(){
+					if ($(this).val() == '1'){
+						$('#form-setting input[name=config_tax_included_store_based]').prop('disabled', false);
+						if ($('#form-setting input:radio[name=config_tax_included_store_based]:checked').val() == '0') {
+							$('#form-setting select[name=config_tax_included_country_id]').parent().parent().show();
+							$('#form-setting select[name=config_tax_included_zone_id]').parent().parent().show();
+							$('#form-setting select[name=config_tax_included_country_id]').prop('disabled', false);
+							$('#form-setting select[name=config_tax_included_zone_id]').prop('disabled', false);
+						}
+					}
+					else {
+						$('#form-setting input[name=config_tax_included_store_based]').prop('disabled', true);
+						$('#form-setting select[name=config_tax_included_country_id]').prop('disabled', true);
+						$('#form-setting select[name=config_tax_included_zone_id]').prop('disabled', true);
+						$('#form-setting select[name=config_tax_included_country_id]').parent().parent().hide();
+						$('#form-setting select[name=config_tax_included_zone_id]').parent().parent().hide();
+					}
+				});
+				$('#form-setting input[name=config_tax_included_store_based]').change(function(){
+					if ($(this).val() == '1'){
+						$('#form-setting select[name=config_tax_included_country_id]').prop('disabled', true);
+						$('#form-setting select[name=config_tax_included_zone_id]').prop('disabled', true);
+						$('#form-setting select[name=config_tax_included_country_id]').parent().parent().hide();
+						$('#form-setting select[name=config_tax_included_zone_id]').parent().parent().hide();
+					}
+					else {
+						$('#form-setting select[name=config_tax_included_country_id]').parent().parent().show();
+						$('#form-setting select[name=config_tax_included_zone_id]').parent().parent().show();
+						$('#form-setting select[name=config_tax_included_country_id]').prop('disabled', false);
+						$('#form-setting select[name=config_tax_included_zone_id]').prop('disabled', false);
+					}
+				});
+			});
+
+			$('select[name=\'config_tax_included_country_id\']').bind('change', function() {
+				$.ajax({
+					url: 'index.php?route=setting/setting/country&token=<?php echo $token; ?>&country_id=' + this.value,
+					dataType: 'json',
+					beforeSend: function() {
+						$('select[name=\'config_tax_included_country_id\']').after('<span class="wait">&nbsp;<img src="view/image/loading.gif" alt="" /></span>');
+					},		
+					complete: function() {
+						$('.wait').remove();
+					},			
+					success: function(json) {
+						if (json['postcode_required'] == '1') {
+							$('#postcode-required').show();
+						} else {
+							$('#postcode-required').hide();
+						}
+						
+						html = '<option value=""><?php echo $text_select; ?></option>';
+						
+						if (json['zone'] != '') {
+							for (i = 0; i < json['zone'].length; i++) {
+			        			html += '<option value="' + json['zone'][i]['zone_id'] + '"';
+				    			
+								if (json['zone'][i]['zone_id'] == '<?php echo $config_tax_included_zone_id; ?>') {
+				      				html += ' selected="selected"';
+				    			}
+				
+				    			html += '>' + json['zone'][i]['name'] + '</option>';
+							}
+						} else {
+							html += '<option value="0" selected="selected"><?php echo $text_none; ?></option>';
+						}
+						
+						$('select[name=\'config_tax_included_zone_id\']').html(html);
+					},
+					error: function(xhr, ajaxOptions, thrownError) {
+						alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+					}
+				});
+			});
+
+			$('select[name=\'config_tax_included_country_id\']').trigger('change');
+			
+			//-->
+            </script>]]></add>
+		</operation>
+	</file>
+	<file path="admin/controller/setting/setting.php">
+		<operation>
+			<search><![CDATA[$data['entry_tax'] = $this->language->get('entry_tax');]]></search>
+			<add position="after"><![CDATA[		
+		$data['entry_tax_included'] = $this->language->get('entry_tax_included');
+		$data['entry_tax_included_store_based'] = $this->language->get('entry_tax_included_store_based');
+		$data['entry_tax_included_country'] = $this->language->get('entry_tax_included_country');
+		$data['entry_tax_included_zone'] = $this->language->get('entry_tax_included_zone');]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[		if (isset($this->request->post['config_tax'])) {]]></search>
+			<add position="before"><![CDATA[		
+		if (isset($this->request->post['config_tax_included'])) {
+			$data['config_tax_included'] = $this->request->post['config_tax_included'];
+		} else {
+			$data['config_tax_included'] = $this->config->get('config_tax_included');
+		}
+		
+		if (isset($this->request->post['config_tax_included_store_based'])) {
+			$data['config_tax_included_store_based'] = $this->request->post['config_tax_included_store_based'];
+		} else {
+			$data['config_tax_included_store_based'] = $this->config->get('config_tax_included_store_based');
+		}
+		
+		if (isset($this->request->post['config_tax_included_country_id'])) {
+			$data['config_tax_included_country_id'] = $this->request->post['config_tax_included_country_id'];
+		} else {
+			$data['config_tax_included_country_id'] = $this->config->get('config_tax_included_country_id');
+		}
+		
+		if (isset($this->request->post['config_tax_included_zone_id'])) {
+			$data['config_tax_included_zone_id'] = $this->request->post['config_tax_included_zone_id'];
+		} else {
+			$data['config_tax_included_zone_id'] = $this->config->get('config_tax_included_zone_id');
+		}
+		]]></add>
+		</operation>
+	</file>
+	<file path="admin/language/english/setting/setting.php">
+		<operation>
+			<search><![CDATA[$_['entry_tax']                        = 'Display Prices With Tax';]]></search>
+			<add position="after"><![CDATA[
+$_['entry_tax_included']           			= 'Insert Prices Including Taxes';
+$_['entry_tax_included_store_based']     	= 'Calculate Taxes Based On The Store Location';
+$_['entry_tax_included_country']			= 'Country For Taxes Calculation';
+$_['entry_tax_included_zone']   			= 'Zone For Taxes Calculation';]]></add>
+		</operation>
+	</file>
+	<file path="admin/language/english/catalog/product.php">
+		<operation>
+			<search><![CDATA[$_['entry_price']            = 'Price';]]></search>
+			<add position="after"><![CDATA[
+$_['entry_price_tax']        = 'Price (including taxes)';]]></add>
+		</operation>
+	</file>
+	<file path="admin/model/catalog/product.php">
+		<operation>
+			<search><![CDATA[class ModelCatalogProduct extends Model {]]></search>
+			<add position="after"><![CDATA[
+	// EDIT BEGIN	
+	public function calculate($value, $tax_class_id, $calculate = true, $fixed_taxes = true) {
+		if ($tax_class_id == 0) return $value;
+		if ($tax_class_id && $calculate) {
+			$amount = $this->getTax($value, $tax_class_id, $fixed_taxes);
+	
+			return $amount;
+			
+		} else {
+			return $value;
+		}
+	}
+	
+	public function getTax($value, $tax_class_id, $fixed_taxes = true) {
+		$amount = 0;
+
+		$tax_rates = $this->getRates($value, $tax_class_id);
+	
+		foreach ($tax_rates as $tax_rate) {
+			if (!$fixed_taxes && $tax_rate['type'] == 'F') {
+				
+			}
+			else {
+				$amount += $tax_rate['amount'];
+			}
+		}
+		
+		return $value + $amount;
+	
+		return $amount;
+	}
+	
+	public function getTaxRates($tax_class_id) {
+		$tax_rates = array();
+		
+		$customer_group_id = $this->config->get('config_customer_group_id');
+		
+		if ($this->config->get('config_tax_included_store_based') or !$this->config->get('config_tax_included')) {
+			$this->store_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+			$this->shipping_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+			$this->payment_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+		}
+		else {
+			$this->store_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+			$this->shipping_address = array(
+					'country_id' => $this->config->get('config_tax_included_country_id'),
+					'zone_id'    => $this->config->get('config_tax_included_zone_id')
+			);
+			$this->payment_address = array(
+					'country_id' => $this->config->get('config_tax_included_country_id'),
+					'zone_id'    => $this->config->get('config_tax_included_zone_id')
+			);
+		}
+		if ($this->shipping_address) {
+			$tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'shipping' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$this->shipping_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$this->shipping_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+				
+			foreach ($tax_query->rows as $result) {
+				$tax_rates[$result['tax_rate_id']] = array(
+						'tax_rate_id' => $result['tax_rate_id'],
+						'name'        => $result['name'],
+						'rate'        => $result['rate'],
+						'type'        => $result['type'],
+						'priority'    => $result['priority']
+				);
+			}
+		}
+		
+		if ($this->payment_address) {
+			$tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'payment' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$this->payment_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$this->payment_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+				
+			foreach ($tax_query->rows as $result) {
+				$tax_rates[$result['tax_rate_id']] = array(
+						'tax_rate_id' => $result['tax_rate_id'],
+						'name'        => $result['name'],
+						'rate'        => $result['rate'],
+						'type'        => $result['type'],
+						'priority'    => $result['priority']
+				);
+			}
+		}
+		
+		if ($this->store_address) {
+			$tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'store' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$this->store_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$this->store_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+		
+			foreach ($tax_query->rows as $result) {
+				$tax_rates[$result['tax_rate_id']] = array(
+						'tax_rate_id' => $result['tax_rate_id'],
+						'name'        => $result['name'],
+						'rate'        => $result['rate'],
+						'type'        => $result['type'],
+						'priority'    => $result['priority']
+				);
+			}
+		}
+		return $tax_rates;
+	}
+	
+	public function getRates($value, $tax_class_id) {
+		$tax_rates = array();
+	
+		$customer_group_id = $this->config->get('config_customer_group_id');
+		
+		if ($this->config->get('config_tax_included_store_based') or !$this->config->get('config_tax_included')) {
+			$this->store_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+			$this->shipping_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+			$this->payment_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+		}
+		else {
+			$this->store_address = array(
+					'country_id' => $this->config->get('config_country_id'),
+					'zone_id'    => $this->config->get('config_zone_id')
+			);
+			$this->shipping_address = array(
+					'country_id' => $this->config->get('config_tax_included_country_id'),
+					'zone_id'    => $this->config->get('config_tax_included_zone_id')
+			);
+			$this->payment_address = array(
+					'country_id' => $this->config->get('config_tax_included_country_id'),
+					'zone_id'    => $this->config->get('config_tax_included_zone_id')
+			);
+		}
+		if ($this->shipping_address) {
+			$tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'shipping' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$this->shipping_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$this->shipping_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+				
+			foreach ($tax_query->rows as $result) {
+				$tax_rates[$result['tax_rate_id']] = array(
+						'tax_rate_id' => $result['tax_rate_id'],
+						'name'        => $result['name'],
+						'rate'        => $result['rate'],
+						'type'        => $result['type'],
+						'priority'    => $result['priority']
+				);
+			}
+		}
+		
+		if ($this->payment_address) {
+			$tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'payment' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$this->payment_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$this->payment_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+				
+			foreach ($tax_query->rows as $result) {
+				$tax_rates[$result['tax_rate_id']] = array(
+						'tax_rate_id' => $result['tax_rate_id'],
+						'name'        => $result['name'],
+						'rate'        => $result['rate'],
+						'type'        => $result['type'],
+						'priority'    => $result['priority']
+				);
+			}
+		}
+		
+	
+		if ($this->store_address) {
+			$tax_query = $this->db->query("SELECT tr2.tax_rate_id, tr2.name, tr2.rate, tr2.type, tr1.priority FROM " . DB_PREFIX . "tax_rule tr1 LEFT JOIN " . DB_PREFIX . "tax_rate tr2 ON (tr1.tax_rate_id = tr2.tax_rate_id) INNER JOIN " . DB_PREFIX . "tax_rate_to_customer_group tr2cg ON (tr2.tax_rate_id = tr2cg.tax_rate_id) LEFT JOIN " . DB_PREFIX . "zone_to_geo_zone z2gz ON (tr2.geo_zone_id = z2gz.geo_zone_id) LEFT JOIN " . DB_PREFIX . "geo_zone gz ON (tr2.geo_zone_id = gz.geo_zone_id) WHERE tr1.tax_class_id = '" . (int)$tax_class_id . "' AND tr1.based = 'store' AND tr2cg.customer_group_id = '" . (int)$customer_group_id . "' AND z2gz.country_id = '" . (int)$this->store_address['country_id'] . "' AND (z2gz.zone_id = '0' OR z2gz.zone_id = '" . (int)$this->store_address['zone_id'] . "') ORDER BY tr1.priority ASC");
+				
+			foreach ($tax_query->rows as $result) {
+				$tax_rates[$result['tax_rate_id']] = array(
+						'tax_rate_id' => $result['tax_rate_id'],
+						'name'        => $result['name'],
+						'rate'        => $result['rate'],
+						'type'        => $result['type'],
+						'priority'    => $result['priority']
+				);
+			}
+		}
+	
+		$tax_rate_data = array();
+	
+		foreach ($tax_rates as $tax_rate) {
+			if (isset($tax_rate_data[$tax_rate['tax_rate_id']])) {
+				$amount = $tax_rate_data[$tax_rate['tax_rate_id']]['amount'];
+			} else {
+				$amount = 0;
+			}
+				
+			if ($tax_rate['type'] == 'F') {
+				$amount += $tax_rate['rate'];
+			} elseif ($tax_rate['type'] == 'P') {
+				$amount += ($value / 100 * $tax_rate['rate']);
+			}
+	
+			$tax_rate_data[$tax_rate['tax_rate_id']] = array(
+					'tax_rate_id' => $tax_rate['tax_rate_id'],
+					'name'        => $tax_rate['name'],
+					'rate'        => $tax_rate['rate'],
+					'type'        => $tax_rate['type'],
+					'amount'      => $amount
+			);
+		}
+	
+		return $tax_rate_data;
+	}
+// EDIT END]]></add>
+		</operation>
+	</file>
+	<file path="admin/controller/catalog/product.php">
+		<operation>
+			<search><![CDATA[class ControllerCatalogProduct extends Controller {]]></search>
+			<add position="after"><![CDATA[	
+	private static function compare_tax_rates ($a, $b) {
+		return ($a['priority'] < $b['priority']) ? -1 : 1;
+	}
+	function json_taxrates () {
+		header('Content-Type: application/json');
+		$result = array();
+		
+		$class_id = (int) $this->request->post['tax_class_id'];
+		
+		if (!isset($class_id)) {
+			$result['status'] = 'error';
+			$result['error'] = 'Invalid input';
+		}
+		else {
+			$this->load->model('catalog/product');
+			$tax_rates = $this->model_catalog_product->getTaxRates($class_id);
+			usort($tax_rates, array( __CLASS__, "compare_tax_rates"));
+			$result['status'] = 'ok';
+			$result['tax_rates'] = $tax_rates;
+		}
+		$this->response->setOutput(json_encode($result));
+	}]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['entry_stock_status'] = $this->language->get('entry_stock_status');
+		$data['entry_price'] = $this->language->get('entry_price');]]></search>
+			<add position="after"><![CDATA[    	
+		$data['entry_price_tax'] = $this->language->get('entry_price_tax'); //EDIT
+		$data['config_tax_included'] = $this->config->get('config_tax_included');]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[if (isset($this->request->post['date_available'])) {]]></search>
+			<add position="before"><![CDATA[
+		if ($data['price'] != '') {
+	    	$data['price_tax'] = round($this->model_catalog_product->calculate($data['price'], $data['tax_class_id'], $this->config->get('config_tax')), 2);
+		} else {
+		    $data['price_tax'] = '';
+    	}
+    	$tax_rates = $this->model_catalog_product->getTaxRates($data['tax_class_id']);
+    	usort($tax_rates, array( __CLASS__, "compare_tax_rates"));
+    	$data['js_rates'] = json_encode($tax_rates);
+    	$data['json_tax_rates'] = $this->url->link('catalog/product/json_taxrates', 'token=' . $data['token'], 'SSL');
+ ]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[if (isset($this->request->post['product_image'])) {]]></search>
+			<add position="before" index="1"><![CDATA[		
+		foreach ($data['product_discounts'] as &$discount) {
+			if ($discount['price'] != '') {
+				$discount['price_tax'] = round($this->model_catalog_product->calculate($discount['price'], $data['tax_class_id'], $this->config->get('config_tax')), 2);
+			}
+			else {
+				$discount['price_tax'] = '';
+			}
+		}
+
+		foreach ($data['product_specials'] as &$special) {
+			if ($special['price'] != '') {
+				$special['price_tax'] = round($this->model_catalog_product->calculate($special['price'], $data['tax_class_id'], $this->config->get('config_tax')), 2);
+			}
+			else {
+				$special['price_tax'] = '';
+			}
+		}]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA['price'                   => $product_option_value['price'],]]></search>
+			<add position="before" index="1"><![CDATA[						'price_tax'               => round($this->model_catalog_product->calculate($product_option_value['price'], $data['tax_class_id'], $this->config->get('config_tax'), false), 2),
+]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA['price'      => $result['price'],]]></search>
+			<add position="replace" index="1"><![CDATA[				'price_tax'  => number_format(round($this->model_catalog_product->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax')), 2), 2),
+				'price'      => $result['price'],
+				'special_tax' => ($special ? number_format(round($this->model_catalog_product->calculate($special, $result['tax_class_id'], $this->config->get('config_tax')), 2), 2) : ''),]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/catalog/product_form.tpl">
+		<operation>
+			<search><![CDATA[<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-product" class="form-horizontal">]]></search>
+			<add position="after"><![CDATA[            <script type="text/javascript">
+				var rates = <?php echo $js_rates; ?>;
+				
+	        	function calculateTaxes(taxed_value, fixed_taxes){
+	
+	        		var amount = 0;
+	        		
+	        		$.each(rates, function(index, item) {
+	            		if (item.type == 'F') {
+							// Fixed
+							if (fixed_taxes) {
+								amount += parseFloat(item.rate);
+							}
+	        		    }
+	        		    
+	        		    else if (item.type == 'P') {
+							// Percentual
+							amount += (taxed_value / 100) * parseFloat(item.rate);
+	        		    }
+	        		});
+	        		
+	        		return amount;
+	        	}
+            	function calculateUntaxedValue(taxed_value, fixed_taxes){
+					var value = taxed_value;
+					var rate = 0;
+					
+					// Removes fix taxes
+					
+            		$.each(rates, function(index, item) {
+                		if (item.type == 'F') {
+							// Fixed
+							if (fixed_taxes) {
+								value -= parseFloat(item.rate);
+							}
+            		    }
+            		});
+
+					// Calculates tax rate
+            		
+            		$.each(rates, function(index, item) {            		    
+            		    if (item.type == 'P') {
+							// Percentual
+							rate += parseFloat(item.rate);
+            		    }
+            		});
+
+					var untaxed_value = 0;
+
+					if (rate != 0) untaxed_value = (value / (rate + 100)) * 100;
+					else untaxed_value = value;
+            		
+            		return untaxed_value;
+            	}
+
+				function updatePrice(){
+					var value = parseFloat($('#form-product input[name=price_tax]').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product input[name=price]').val(0);
+					else $('#form-product input[name=price]').val(calculateUntaxedValue(value, true));
+				}
+				function updatePriceTax(){
+					var value = parseFloat($('#form-product input[name=price]').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product input[name=price_tax]').val(0);
+					else $('#form-product input[name=price_tax]').val(value + calculateTaxes(value, true));
+				}
+				function updatePriceDiscount(row){
+					var value = parseFloat($('#form-product #discount-row' + row + ' .product_discount_price_tax').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product #discount-row' + row + ' .product_discount_price').val(0);
+					else $('#form-product #discount-row' + row + ' .product_discount_price').val(calculateUntaxedValue(value, true));
+				}
+				function updatePriceTaxDiscount(row){
+					var value = parseFloat($('#form-product #discount-row' + row + ' .product_discount_price').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product #discount-row' + row + ' .product_discount_price_tax').val(0);
+					else $('#form-product #discount-row' + row + ' .product_discount_price_tax').val(value + calculateTaxes(value, true));
+				}
+				function updatePriceSpecial(row){
+					var value = parseFloat($('#form-product #special-row' + row + ' .product_special_price_tax').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product #special-row' + row + ' .product_special_price').val(0);
+					else $('#form-product #special-row' + row + ' .product_special_price').val(calculateUntaxedValue(value, true));
+				}
+				function updatePriceTaxSpecial(row){
+					var value = parseFloat($('#form-product #special-row' + row + ' .product_special_price').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product #special-row' + row + ' .product_special_price_tax').val(0);
+					else $('#form-product #special-row' + row + ' .product_special_price_tax').val(value + calculateTaxes(value, true));
+				}
+				function updatePriceOption(row){
+					var value = parseFloat($('#form-product #option-value-row' + row + ' .product_option_price_tax').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product #option-value-row' + row + ' .product_option_price').val(0);
+					else $('#form-product #option-value-row' + row + ' .product_option_price').val(calculateUntaxedValue(value, false));
+				}
+				function updatePriceTaxOption(row){
+					var value = parseFloat($('#form-product #option-value-row' + row + ' .product_option_price').val());
+					if (isNaN(value)) value = 0;
+					
+					if (value == 0) $('#form-product #option-value-row' + row + ' .product_option_price_tax').val(0);
+					else $('#form-product #option-value-row' + row + ' .product_option_price_tax').val(value + calculateTaxes(value, false));
+				}
+				$(document).ready(function(){
+					$('#form-product input[name=price_tax]').on("change keyup paste", function(){
+						updatePrice();
+					});
+					$('#form-product input[name=price]').on("change keyup paste", function(){
+						updatePriceTax();
+					});
+		            <?php if ($config_tax_included) { ?>
+					$('#form-product select[name=tax_class_id]').change(function(){
+						$.ajax({
+							type: 'POST',
+							url: 'index.php?route=catalog/product/json_taxrates&token=<?php echo $token; ?>',
+							data: { 'tax_class_id': $(this).val() },
+							success: function(result){
+										if (result.status == 'ok') {
+											rates = result.tax_rates;
+											updatePrice();
+											$('#discount tbody').each(function(){
+												updatePriceDiscount($(this).data('row'));
+											});
+											$('#special tbody').each(function(){
+												updatePriceSpecial($(this).data('row'));
+											});
+											$('#tab-option tbody').each(function(){
+												updatePriceOption($(this).data('row'));
+											});
+										}
+									},
+							dataType: 'json'
+						});
+					});
+					<?php } ?>
+					$('#form-product').on("change keyup paste", ".product_discount_price_tax", function(){
+						updatePriceDiscount($(this).parent().parent().data('row'));
+					});
+					$('#form-product').on("change keyup paste", ".product_discount_price", function(){
+						updatePriceTaxDiscount($(this).parent().parent().data('row'));
+					});
+					$('#form-product').on("change keyup paste", ".product_special_price_tax", function(){
+						updatePriceSpecial($(this).parent().parent().data('row'));
+					});
+					$('#form-product').on("change keyup paste", ".product_special_price", function(){
+						updatePriceTaxSpecial($(this).parent().parent().data('row'));
+					});
+					$('#form-product').on("change keyup paste", ".product_option_price_tax", function(){
+						updatePriceOption($(this).parent().parent().data('row'));
+					});
+					$('#form-product').on("change keyup paste", ".product_option_price", function(){
+						updatePriceTaxOption($(this).parent().parent().data('row'));
+					});
+				});
+            </script>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<div class="form-group">
+                <label class="col-sm-2 control-label" for="input-price"><?php echo $entry_price; ?></label>]]></search>
+			<add position="before"><![CDATA[            
+			<?php if ($config_tax_included) { ?>
+			<div class="form-group">
+                <label class="col-sm-2 control-label" for="input-price"><?php echo $entry_price_tax; ?></label>
+                <div class="col-sm-10">
+                  <input type="text" name="price_tax" value="<?php echo $price; ?>" placeholder="<?php echo $price_tax; ?>" id="input-price" class="form-control" />
+                </div>
+              </div>
+            <?php } ?>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<table id="discount" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <td class="text-left"><?php echo $entry_customer_group; ?></td>
+                      <td class="text-right"><?php echo $entry_quantity; ?></td>
+                      <td class="text-right"><?php echo $entry_priority; ?></td>]]></search>
+			<add position="after"><![CDATA[
+					<?php if ($config_tax_included) { ?>
+                		<td class="text-right"><?php echo $entry_price_tax; ?></td>
+                	<?php } ?>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<td class="text-right"><input type="text" name="product_discount[<?php echo $discount_row; ?>][price]" value="<?php echo $product_discount['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>]]></search>
+			<add position="replace" index="1"><![CDATA[
+                <?php if ($config_tax_included) { ?>
+                <td class="text-right"><input type="text" class="form-control product_discount_price_tax" name="product_discount[<?php echo $discount_row; ?>][price_tax]" value="<?php echo $product_discount['price_tax']; ?>" /></td>
+                <?php } ?>
+                <td class="text-right"><input type="text" name="product_discount[<?php echo $discount_row; ?>][price]" value="<?php echo $product_discount['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<?php $discount_row++; ?>]]></search>
+			<add position="before" index="1"><![CDATA[
+              <script type="text/javascript">
+				$(document).ready(function(){
+					$('#discount-row<?= $discount_row ?>').data('row', <?= $discount_row ?>);
+				});
+              </script>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<table id="special" class="list">]]></search>
+			<add position="after" offset="4" index="1"><![CDATA[
+	        <?php if ($config_tax_included) { ?>
+                <td class="right"><?php echo $entry_price_tax; ?></td>
+                <?php } ?>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<td class="right"><input type="text" name="product_special[<?php echo $special_row; ?>][price]" value="<?php echo $product_special['price']; ?>" /></td>]]></search>
+			<add position="replace" index="1"><![CDATA[
+                <?php if ($config_tax_included) { ?>
+                <td class="right"><input type="text" class="product_special_price_tax" name="product_special[<?php echo $special_row; ?>][price_tax]" value="<?php echo $product_special['price_tax']; ?>" /></td>
+                <?php } ?>
+                <td class="right"><input type="text" class="product_special_price" name="product_special[<?php echo $special_row; ?>][price]" value="<?php echo $product_special['price']; ?>" /></td>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<?php $special_row++; ?>]]></search>
+			<add position="before" index="1"><![CDATA[
+              <script type="text/javascript">
+				$(document).ready(function(){
+					$('#special-row<?= $special_row ?>').data('row', <?= $special_row ?>);
+				});
+              </script>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[html += '
+    <td class="right"><input type="text" name="product_discount[' + discount_row + '][price]" value="" /></td>';]]></search>
+			<add position="replace" index="1"><![CDATA[    <?php if ($config_tax_included) { ?>
+    html += '    <td class="right"><input class="product_discount_price_tax type="text" name="product_discount[' + discount_row + '][price_tax]" value="" /></td>';
+    <?php } ?>
+	html += '    <td class="right"><input class="product_discount_price type="text" name="product_discount[' + discount_row + '][price]" value="" /></td>';]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$('#discount-row' + discount_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});]]></search>
+			<add position="after" index="1"><![CDATA[	$('#discount-row' + discount_row).data('row', discount_row);]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[html += '    <td class="right"><input type="text" name="product_special[' + special_row + '][price]" value="" /></td>';]]></search>
+			<add position="replace" index="1"><![CDATA[    <?php if ($config_tax_included) { ?>
+    html += '    <td class="right"><input type="text" class="product_special_price_tax" name="product_special[' + special_row + '][price_tax]" value="" /></td>';
+    <?php } ?>
+    html += '    <td class="right"><input type="text" class="product_special_price" name="product_special[' + special_row + '][price]" value="" /></td>';]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$('#special-row' + special_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});]]></search>
+			<add position="after" index="1"><![CDATA[	$('#special-row' + special_row).data('row', special_row);]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<td class="right"><?php echo $entry_price; ?></td>]]></search>
+			<add position="replace" index="1"><![CDATA[                  <td class="right"><?php if ($this->config->get('config_tax_included')) { ?>
+                  <?php echo $entry_price_tax; ?> 
+				  <?php } ?><?php echo $entry_price; ?></td>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<input type="text" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price]" value="<?php echo $product_option_value['price']; ?>" size="5" /></td>]]></search>
+			<add position="replace" index="1"><![CDATA[                    <?php if ($config_tax_included) { ?>
+                    <input type="text" class="product_option_price_tax" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price_tax]" value="<?php echo $product_option_value['price_tax']; ?>" size="5" />
+                    <?php } ?>
+                    <input type="text" class="product_option_price" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price]" value="<?php echo $product_option_value['price']; ?>" size="5" /></td>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[<?php $option_value_row++; ?>]]></search>
+			<add position="before" index="1"><![CDATA[	          <script type="text/javascript">
+				$(document).ready(function(){
+					$('#option-value-row<?= $option_value_row ?>').data('row', <?= $option_value_row ?>);
+				});
+	          </script>]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[html += '    <input type="text" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price]" value="" size="5" /></td>';]]></search>
+			<add position="replace" index="1"><![CDATA[	<?php if ($config_tax_included) { ?>
+	html += '    <input type="text" class="product_option_price_tax" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price_tax]" value="" size="5" />';
+	<?php } ?>
+	html += '    <input type="text" class="product_option_price" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price]" value="" size="5" /></td>';]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[	$('#option-value' + option_row + ' tfoot').before(html);]]></search>
+			<add position="after" index="1"><![CDATA[	$('#option-value-row' + option_value_row).data('row', option_value_row);]]></add>
+		</operation>
+	</file>
+	
+	<file path="admin/view/template/catalog/product_list.tpl">
+		<operation>
+			<search><![CDATA[<td class="left"><?php if ($product['special']) { ?>]]></search>
+			<add position="replace" offset="5" index="1"><![CDATA[              <td class="left"><?php if ($this->config->get('config_tax_included')) { ?><?php if ($product['special_tax']) { ?>
+                <span style="text-decoration: line-through;"><?php echo $product['price_tax']; ?></span><br/>
+                <span style="color: #b00;"><?php echo $product['special_tax']; ?></span>
+                <?php } else { ?>
+                <?php echo $product['price_tax']; ?>
+                <?php } ?><?php } else { ?>
+		<?php if ($product['special']) { ?>
+                <span style="text-decoration: line-through;"><?php echo $product['price']; ?></span><br/>
+                <span style="color: #b00;"><?php echo $product['special']; ?></span>
+                <?php } else { ?>
+                <?php echo $product['price']; ?>
+                <?php } ?>
+		<?php } ?></td>]]></add>
+		</operation>
+	</file>
+</modification>
