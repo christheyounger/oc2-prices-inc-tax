@@ -457,6 +457,12 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 		$data['config_tax_included'] = $this->config->get('config_tax_included');]]></add>
 		</operation>
 		<operation>
+			<search><![CDATA[$data['button_filter'] = $this->language->get('button_filter');]]></search>
+			<add position="after"><![CDATA[    	
+
+		$data['config_tax_included'] = $this->config->get('config_tax_included');]]></add>
+		</operation>
+		<operation>
 			<search><![CDATA[if (isset($this->request->post['date_available'])) {]]></search>
 			<add position="before"><![CDATA[
 		if ($data['price'] != '') {
@@ -821,20 +827,25 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 	
 	<file path="admin/view/template/catalog/product_list.tpl">
 		<operation>
-			<search><![CDATA[<td class="left"><?php if ($product['special']) { ?>]]></search>
-			<add position="replace" offset="5" index="1"><![CDATA[              <td class="left"><?php if ($this->config->get('config_tax_included')) { ?><?php if ($product['special_tax']) { ?>
-                <span style="text-decoration: line-through;"><?php echo $product['price_tax']; ?></span><br/>
-                <span style="color: #b00;"><?php echo $product['special_tax']; ?></span>
-                <?php } else { ?>
-                <?php echo $product['price_tax']; ?>
-                <?php } ?><?php } else { ?>
-		<?php if ($product['special']) { ?>
-                <span style="text-decoration: line-through;"><?php echo $product['price']; ?></span><br/>
-                <span style="color: #b00;"><?php echo $product['special']; ?></span>
-                <?php } else { ?>
-                <?php echo $product['price']; ?>
-                <?php } ?>
-		<?php } ?></td>]]></add>
+			<search><![CDATA[<td class="text-left"><?php if ($product['special']) { ?>
+                    <span style="text-decoration: line-through;"><?php echo $product['price']; ?></span><br/>
+                    <div class="text-danger"><?php echo $product['special']; ?></div>
+                    <?php } else { ?>
+                    <?php echo $product['price']; ?>
+                    <?php } ?></td>]]></search>
+			<add position="replace"><![CDATA[<td class="text-left"><?php if ($config_tax_included) { ?><?php if ($product['special_tax']) { ?>
+	                <span style="text-decoration: line-through;"><?php echo $product['price_tax']; ?></span><br/>
+	                <span class="text-danger"><?php echo $product['special_tax']; ?></span>
+	                <?php } else { ?>
+	                <?php echo $product['price_tax']; ?>
+	                <?php } ?><?php } else { ?>
+					<?php if ($product['special']) { ?>
+	                <span style="text-decoration: line-through;"><?php echo $product['price']; ?></span><br/>
+	                <span class="text-danger"><?php echo $product['special']; ?></span>
+	                <?php } else { ?>
+	                <?php echo $product['price']; ?>
+	                <?php } ?>
+					<?php } ?></td>]]></add>
 		</operation>
 	</file>
 </modification>
