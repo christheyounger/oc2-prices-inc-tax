@@ -678,7 +678,7 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 			<div class="form-group">
                 <label class="col-sm-2 control-label" for="input-price"><?php echo $entry_price_tax; ?></label>
                 <div class="col-sm-10">
-                  <input type="text" name="price_tax" value="<?php echo $price; ?>" placeholder="<?php echo $price_tax; ?>" id="input-price" class="form-control" />
+                  <input type="text" name="price_tax" value="<?php echo $price_tax; ?>" placeholder="<?php echo $price_tax; ?>" id="input-price" class="form-control" />
                 </div>
               </div>
             <?php } ?>]]></add>
@@ -701,7 +701,7 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
                 <?php if ($config_tax_included) { ?>
                 <td class="text-right"><input type="text" class="form-control product_discount_price_tax" name="product_discount[<?php echo $discount_row; ?>][price_tax]" value="<?php echo $product_discount['price_tax']; ?>" /></td>
                 <?php } ?>
-                <td class="text-right"><input type="text" name="product_discount[<?php echo $discount_row; ?>][price]" value="<?php echo $product_discount['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>]]></add>
+                <td class="text-right"><input type="text" name="product_discount[<?php echo $discount_row; ?>][price]" value="<?php echo $product_discount['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="product_discount_price form-control" /></td>]]></add>
 		</operation>
 		<operation>
 			<search><![CDATA[<?php $discount_row++; ?>]]></search>
@@ -713,19 +713,23 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
               </script>]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[<table id="special" class="list">]]></search>
-			<add position="after" offset="4" index="1"><![CDATA[
-	        <?php if ($config_tax_included) { ?>
-                <td class="right"><?php echo $entry_price_tax; ?></td>
-                <?php } ?>]]></add>
+			<search><![CDATA[<table id="special" class="table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <td class="text-left"><?php echo $entry_customer_group; ?></td>
+                      <td class="text-right"><?php echo $entry_priority; ?></td>]]></search>
+			<add position="after"><![CDATA[
+	        		  <?php if ($config_tax_included) { ?>
+                		<td class="text-right"><?php echo $entry_price_tax; ?></td>
+                	  <?php } ?>]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[<td class="right"><input type="text" name="product_special[<?php echo $special_row; ?>][price]" value="<?php echo $product_special['price']; ?>" /></td>]]></search>
+			<search><![CDATA[<td class="text-right"><input type="text" name="product_special[<?php echo $special_row; ?>][price]" value="<?php echo $product_special['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>]]></search>
 			<add position="replace" index="1"><![CDATA[
                 <?php if ($config_tax_included) { ?>
-                <td class="right"><input type="text" class="product_special_price_tax" name="product_special[<?php echo $special_row; ?>][price_tax]" value="<?php echo $product_special['price_tax']; ?>" /></td>
+                <td class="text-right"><input type="text" class="form-control product_special_price_tax" name="product_special[<?php echo $special_row; ?>][price_tax]" value="<?php echo $product_special['price_tax']; ?>" /></td>
                 <?php } ?>
-                <td class="right"><input type="text" class="product_special_price" name="product_special[<?php echo $special_row; ?>][price]" value="<?php echo $product_special['price']; ?>" /></td>]]></add>
+                <td class="text-right"><input type="text" name="product_special[<?php echo $special_row; ?>][price]" value="<?php echo $product_special['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="product_special_price form-control" /></td>]]></add>
 		</operation>
 		<operation>
 			<search><![CDATA[<?php $special_row++; ?>]]></search>
@@ -736,6 +740,9 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 				});
               </script>]]></add>
 		</operation>
+
+
+		
 		<operation>
 			<search><![CDATA[html += '
     <td class="right"><input type="text" name="product_discount[' + discount_row + '][price]" value="" /></td>';]]></search>
