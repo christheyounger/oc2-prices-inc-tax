@@ -802,15 +802,20 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 	          </script>]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[html += '    <input type="text" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price]" value="" size="5" /></td>';]]></search>
-			<add position="replace" index="1"><![CDATA[	<?php if ($config_tax_included) { ?>
-	html += '    <input type="text" class="product_option_price_tax" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price_tax]" value="" size="5" />';
-	<?php } ?>
-	html += '    <input type="text" class="product_option_price" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price]" value="" size="5" /></td>';]]></add>
+			<search><![CDATA[html += '        <td class="text-right"><?php echo $entry_price; ?></td>';]]></search>
+			<add position="replace"><![CDATA[html += '        <td class="text-right"><?php if ($config_tax_included) { ?><?=$entry_price_tax?><br/><?php } ?><?=$entry_price?></td>';]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[	$('#option-value' + option_row + ' tfoot').before(html);]]></search>
-			<add position="after" index="1"><![CDATA[	$('#option-value-row' + option_value_row).data('row', option_value_row);]]></add>
+			<search><![CDATA[html += '  <input type="text" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price]" value="" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>';]]></search>
+			<add position="replace"><![CDATA[	<?php if ($config_tax_included) { ?>
+	html += '    <input type="text" class="form-control product_option_price_tax" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price_tax]" value="" placeholder="<?=$entry_price_tax?>" />';
+	<?php } ?>
+	html += '  <input type="text" class="form-control product_option_price" name="product_option[' + option_row + '][product_option_value][' + option_value_row + '][price]" value="" placeholder="<?php echo $entry_price; ?>" /></td>';]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$('#option-value' + option_row + ' tbody').append(html);]]></search>
+			<add position="after"><![CDATA[
+	$('#option-value-row' + option_value_row).data('row', option_value_row);]]></add>
 		</operation>
 	</file>
 	
