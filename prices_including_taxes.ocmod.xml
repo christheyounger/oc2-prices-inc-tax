@@ -739,32 +739,44 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 					$('#special-row<?= $special_row ?>').data('row', <?= $special_row ?>);
 				});
               </script>]]></add>
+		</operation>		
+		<operation>
+			<search><![CDATA[html += '  <td class="text-right"><input type="text" name="product_discount[' + discount_row + '][price]" value="" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>';]]></search>
+			<add position="replace"><![CDATA[    <?php if ($config_tax_included) { ?>
+    html += '  <td class="text-right"><input class="form-control product_discount_price_tax type="text" name="product_discount[' + discount_row + '][price_tax]" value="" placeholder="<?=$entry_price_tax?>" /></td>';
+    <?php } ?>
+    html += '  <td class="text-right"><input type="text" name="product_discount[' + discount_row + '][price]" value="" placeholder="<?php echo $entry_price; ?>" class="product_discount_price form-control" /></td>';]]></add>
 		</operation>
+		<operation>
+			<search><![CDATA[
+	$('.date').datetimepicker({
+		pickTime: false
+	});
+	
+	discount_row++;]]></search>
+			<add position="before"><![CDATA[
+	$('#discount-row' + discount_row).data('row', discount_row);
 
-
+	]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[html += '  <td class="text-right"><input type="text" name="product_special[' + special_row + '][price]" value="" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>';]]></search>
+			<add position="replace"><![CDATA[    <?php if ($config_tax_included) { ?>
+    html += '  <td class="text-right"><input type="text" class="product_special_price_tax form-control" name="product_special[' + special_row + '][price_tax]" value="" placeholder="<?=$entry_price_tax?>" /></td>';
+    <?php } ?>
+    html += '  <td class="text-right"><input type="text" name="product_special[' + special_row + '][price]" value="" placeholder="<?php echo $entry_price; ?>" class="product_special_price form-control" /></td>']]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+	$('.date').datetimepicker({
+		pickTime: false
+	});
 		
-		<operation>
-			<search><![CDATA[html += '
-    <td class="right"><input type="text" name="product_discount[' + discount_row + '][price]" value="" /></td>';]]></search>
-			<add position="replace" index="1"><![CDATA[    <?php if ($config_tax_included) { ?>
-    html += '    <td class="right"><input class="product_discount_price_tax type="text" name="product_discount[' + discount_row + '][price_tax]" value="" /></td>';
-    <?php } ?>
-	html += '    <td class="right"><input class="product_discount_price type="text" name="product_discount[' + discount_row + '][price]" value="" /></td>';]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[$('#discount-row' + discount_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});]]></search>
-			<add position="after" index="1"><![CDATA[	$('#discount-row' + discount_row).data('row', discount_row);]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[html += '    <td class="right"><input type="text" name="product_special[' + special_row + '][price]" value="" /></td>';]]></search>
-			<add position="replace" index="1"><![CDATA[    <?php if ($config_tax_included) { ?>
-    html += '    <td class="right"><input type="text" class="product_special_price_tax" name="product_special[' + special_row + '][price_tax]" value="" /></td>';
-    <?php } ?>
-    html += '    <td class="right"><input type="text" class="product_special_price" name="product_special[' + special_row + '][price]" value="" /></td>';]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[$('#special-row' + special_row + ' .date').datepicker({dateFormat: 'yy-mm-dd'});]]></search>
-			<add position="after" index="1"><![CDATA[	$('#special-row' + special_row).data('row', special_row);]]></add>
+	special_row++;]]></search>
+			<add position="before"><![CDATA[
+	$('#special-row' + special_row).data('row', special_row);
+
+	]]></add>
 		</operation>
 		<operation>
 			<search><![CDATA[<td class="right"><?php echo $entry_price; ?></td>]]></search>
