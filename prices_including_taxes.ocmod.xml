@@ -1,6 +1,6 @@
 <modification>
 	<name><![CDATA[Prices including taxes]]></name>
-	<version><![CDATA[1.0]]></version>
+	<version><![CDATA[1.1]]></version>
 	<author><![CDATA[Chris Young - chris@youngfam.net]]></author>
 	<file path="admin/view/template/setting/setting.tpl">
 		<operation>
