@@ -1,7 +1,9 @@
 oc2-prices-inc-tax
 ==================
 
-Input prices including tax into Opencart 2, calculate and store ex tax value
+An OCMOD XML file to add fields to the admin so you can enter the price of a product including taxes, and have the price excluding taxes calculated for you using JavaScript.
+
+Adds fields to the data, options, special and discount tabs of the product edit form, and shows prices including tax in the product list view.
 
 Installation
 -----------
