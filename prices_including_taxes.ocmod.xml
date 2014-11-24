@@ -779,17 +779,19 @@ $_['entry_price_tax']        = 'Price (including taxes)';]]></add>
 	]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[<td class="right"><?php echo $entry_price; ?></td>]]></search>
-			<add position="replace" index="1"><![CDATA[                  <td class="right"><?php if ($this->config->get('config_tax_included')) { ?>
-                  <?php echo $entry_price_tax; ?> 
-				  <?php } ?><?php echo $entry_price; ?></td>]]></add>
+			<search><![CDATA[<td class="text-left"><?php echo $entry_subtract; ?></td>
+                              <td class="text-right"><?php echo $entry_price; ?></td>]]></search>
+			<add position="replace"><![CDATA[<td class="text-left"><?php echo $entry_subtract; ?></td>
+                              <td class="text-right"><?php if ($config_tax_included) { ?>
+			                  <?php echo $entry_price_tax; ?><?php } ?>
+			                  <?=$entry_price?></td>]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[<input type="text" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price]" value="<?php echo $product_option_value['price']; ?>" size="5" /></td>]]></search>
-			<add position="replace" index="1"><![CDATA[                    <?php if ($config_tax_included) { ?>
-                    <input type="text" class="product_option_price_tax" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price_tax]" value="<?php echo $product_option_value['price_tax']; ?>" size="5" />
+			<search><![CDATA[<input type="text" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price]" value="<?php echo $product_option_value['price']; ?>" placeholder="<?php echo $entry_price; ?>" class="form-control" /></td>]]></search>
+			<add position="replace"><![CDATA[<?php if ($config_tax_included) { ?>
+                    <input type="text" placeholder="<?php echo $entry_price_tax; ?>" class="product_option_price_tax form-control" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price_tax]" value="<?php echo $product_option_value['price_tax']; ?>" size="5" />
                     <?php } ?>
-                    <input type="text" class="product_option_price" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price]" value="<?php echo $product_option_value['price']; ?>" size="5" /></td>]]></add>
+                    <input type="text" class="form-control product_option_price" placeholder="<?php echo $entry_price; ?>" name="product_option[<?php echo $option_row; ?>][product_option_value][<?php echo $option_value_row; ?>][price]" value="<?php echo $product_option_value['price']; ?>" size="5" /></td>]]></add>
 		</operation>
 		<operation>
 			<search><![CDATA[<?php $option_value_row++; ?>]]></search>
